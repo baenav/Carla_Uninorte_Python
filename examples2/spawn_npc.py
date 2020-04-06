@@ -6,7 +6,6 @@
 # This work is licensed under the terms of the MIT license.
 # For a copy, see <https://opensource.org/licenses/MIT>.
 
-"Esto es una prueba de git"
 """Spawn NPCs into the simulation"""
 
 import glob
@@ -27,7 +26,6 @@ import carla
 import argparse
 import logging
 import random
-from carla import *
 
 
 def main():
@@ -87,7 +85,6 @@ def main():
     vehicles_list = []
     walkers_list = []
     all_id = []
-    vehicle_locations = []
     client = carla.Client(args.host, args.port)
     client.set_timeout(10.0)
 
@@ -138,9 +135,6 @@ def main():
         # --------------
         # Spawn vehicles
         # --------------
-
-
-
         batch = []
         for n, transform in enumerate(spawn_points):
             if n >= args.number_of_vehicles:
@@ -153,19 +147,13 @@ def main():
                 driver_id = random.choice(blueprint.get_attribute('driver_id').recommended_values)
                 blueprint.set_attribute('driver_id', driver_id)
             blueprint.set_attribute('role_name', 'autopilot')
-            print("transform =",transform)
             batch.append(SpawnActor(blueprint, transform).then(SetAutopilot(FutureActor, True)))
+
         for response in client.apply_batch_sync(batch, synchronous_master):
             if response.error:
                 logging.error(response.error)
             else:
                 vehicles_list.append(response.actor_id)
-        vehicles_ids = vehicles_list
-        vehicles_actor = world.get_actors(vehicles_ids) 
-        print(vehicles_actor)
-
-
-
 
         # -------------
         # Spawn Walkers
@@ -248,43 +236,12 @@ def main():
 
         # example of how to use parameters
         traffic_manager.global_percentage_speed_difference(30.0)
-        # testList=[]
-        a = Location(x=325.350983, y=-254.661804, z=-38.016857)
-        dead_points = [a]
-        for i in vehicles_actor:
-            vehicle_locations.append(0)
 
         while True:
             if args.sync and synchronous_master:
                 world.tick()
             else:
                 world.wait_for_tick()
-                # time.sleep(1)
-                for i in range(len(vehicles_actor)):
-                    vehicle_locations[i] = vehicles_actor[i].get_location()
-                # testVar = vehicle_locations[0]
-                # print(testVar)
-
-                for i in range(len(vehicle_locations)):
-                    x_now = vehicle_locations[i].x
-                    y_now = vehicle_locations[i].y
-                    print("Actor {}: x = {}, y = {}".format(i, x_now, y_now))
-
-                    if (x_now < -6 and y_now < -317) or (x_now > 96 and y_now > 430) or (x_now <-230 and y_now > 345 or (x_now < -118 and y_now < -290)) or (x_now > 255 and \
-                    -116 < y_now < -108) or (290 < x_now < 302 and y_now < -280) or (312 < x_now < 338 and y_now < -270):
-                        print("El actor {} se va".format(vehicles_actor[i]))
-                        temp_transform = random.choice(world.get_map().get_spawn_points())
-                        temp_location = temp_transform.location
-                        vehicles_actor[i].set_location(temp_location)
-                        print("Teleported to safety")
-
-                        # it_is_dead = vehicles_actor[i].destroy()
-                        # vehicles_actor.remove(vehicles_actor[i])
-                        # vehi
-                        # if it_is_dead:
-                        #     print("Actor fuera de límites destruido")
-                        
-                        
 
     finally:
 
