@@ -1,0 +1,135 @@
+module_7
+    start
+    guarda la velocidad
+    guarda estado del vehiculo
+
+    bp.guarda Lookahead
+
+    bp.transition_state (usa waypoints, estado y velocidad)
+        if stado = Follow_lane:
+            encuentra el index mas cercano
+
+            -goal_index = get_goal_index para encontrar el goal_index
+                calcula longitudes de arco en el Lookahead, devuelve el indice
+                del waypoint
+
+            -revisa si hay stopsign en el goal index, siempre da falso
+                check señal de pare, da falso
+
+            -goal_state = waypoints[goal_index]
+
+            -if hay Pare 
+                goal_state[2] = 0 = fija la velocidad en ese punto a 0
+                state = Desacelerar para parar
+            pass
+
+        elif stado = Desacelerar para parar
+            if velocidad > threshhold de stop:
+                stado = Desacelerar para parar
+            else:
+                stado = queda parado
+            pass
+
+        elif stado = queda parado:
+            if el conteo de tiempo se cumple:
+                encuentra el index mas cercano
+                -goal_index = get_goal_index para encontrar el goal_index 
+                 (linea 13) para volver a seguir el waypoint.
+
+                -comprueba si el para ya no está en Lookahead
+
+                if no hay pare:
+                    stado = Follow_lane
+                pass
+            else:
+                sigue contando
+
+            pass
+
+        else:
+            error: estado invalido 
+    
+    bp.check_for_lead_vehicle (usa estado, transform de todos los otros carros)
+        if not flag de seguir vehiculo:
+            calcula distancia entre los carros
+            if distancia entre los carros > distancia predefinida para seguir:
+                El carro está muy lejos --> return
+
+            if el angulo relativo entre los carros está entre +-45° del andulo del vehiculo:
+                return
+            
+            flag de seguir vehiculo = True
+
+        else:
+            calcula distancia entre los carros
+            if esa distancia < distancia predefinida + 15m:
+                return
+            if angulo está fuera del rango de antes:
+                return
+            flag de seguir vehiculo = False
+    
+    goal_state_set = lp.get_goal_state_set (le entran bp.goal_index, bp_goal_state, waypoints y estado)
+        if el goal_index no es el ultimo punto de los waypoint :
+            computa los deltas con la diferencia entre el goal_index y el wp que le sigue
+        else:
+            computa los deltas con el penultimo y el que le sigue
+        
+        goal_state_local = goal_state
+
+        goal_x y goal_y son las coordenadas x y y del goal_state en el marco del vehiculo
+
+        se restan x y y del goal_state_local con x y y del estado del vehiculo
+        gual_t = heading - heading del vehiculo
+        
+        todo esto es para transformar el punto del goal_state al marco del vehiculo en posición y angulo
+
+        gual_v = velodidad en el goal_state, se mantiene igual, sin transformación
+
+        cosas extra
+
+        goal_state_set = []
+
+        for i en el numero de caminos deseados:
+            se saca el offset entre ellos para x y y
+            y se suman a los goal_x y goal_y en goal_state_set
+
+        Aqui se conforman los caminos alternativos
+
+        return goal_state_set
+    
+    paths y path validity = lp.plan_paths(le entra el goal_state_set)
+        crea las listas vacias paths y path_validity
+        for goal_state en el state:
+            path = path_optimizer.optimize_spiral(le entra x, y y velocidad)
+                devuelve el optimized path
+            
+            if algo ahi que no entiendo:
+                el path no es valido
+
+            else: si es válido
+        return paths y path_validity
+    
+    colission_check_array = lp._collision_checker._collision_check(paths, ubicacion del carro):
+        crea el colission_check_array con ceros
+        for cada path:
+            compara los circulos de colisión
+        return collision_check_array
+
+    best_index = lp._collision_checker.select_best_path_index (le entra paths, collision_check_array, bp._goal_state)
+        return best_index
+
+if no hay un mejor camino:
+    se deja el anterior
+
+se calcula el pefil de velocidad y se computan los nuevos waypoints
+se guardan en local_waypoints.
+se interpolan estos valores y guardan en wp_interp
+
+
+
+
+
+
+
+
+

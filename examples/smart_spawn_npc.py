@@ -6,7 +6,7 @@
 # This work is licensed under the terms of the MIT license.
 # For a copy, see <https://opensource.org/licenses/MIT>.
 
-"Esto es una prueba de git"
+"Esto es una prueba de git "
 """Spawn NPCs into the simulation"""
 
 import glob
@@ -271,7 +271,7 @@ def main():
                     print("Actor {}: x = {}, y = {}".format(i, x_now, y_now))
 
                     if (x_now < -6 and y_now < -317) or (x_now > 96 and y_now > 430) or (x_now <-230 and y_now > 345 or (x_now < -118 and y_now < -290)) or (x_now > 255 and \
-                    -116 < y_now < -108) or (290 < x_now < 302 and y_now < -280) or (312 < x_now < 338 and y_now < -270):
+                    -116 < y_now < -108) or (290 < x_now < 302 and y_now < -280) or (312 < x_now < 338 and y_now < -270) or (x_now> 230 and y_now < -120):
                         print("El actor {} se va".format(vehicles_actor[i]))
                         temp_transform = random.choice(world.get_map().get_spawn_points())
                         temp_location = temp_transform.location
