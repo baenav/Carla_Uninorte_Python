@@ -429,7 +429,7 @@ class BehaviorAgent(Agent):
 
         return control
 
-    def run_avoid_step(self, debug=False):
+    def run_avoid_step(self, heading, debug=False):
         """
         Execute one step of navigation.
 
@@ -497,7 +497,7 @@ class BehaviorAgent(Agent):
         if self._local_planner.avoid_counter == 5 and self._local_planner.prev_state == 0:
             self._local_planner.reset_counter()
 
-        control = self._local_planner.run_avoid_step(
+        control = self._local_planner.run_avoid_step(heading,
             target_speed= min(self.behavior.max_speed, self.speed_limit - self.behavior.speed_lim_dist), debug=debug)
 
         return control

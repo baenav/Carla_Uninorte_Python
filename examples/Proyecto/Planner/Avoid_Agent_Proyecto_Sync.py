@@ -713,13 +713,13 @@ def main():
 
         waypoints = agent.set_waypoints(WAYPOINT_FILE, clean=True)
 
-        # # Spawn Actor in the way
-        # actor_list = []
-        # blueprint_library = world.world.get_blueprint_library()
-        # car_bp = random.choice(blueprint_library.filter('vehicle'))
-        # car_transform = carla.Transform(carla.Location(x = -196.5, y = 233.5, z = 1),carla.Rotation(yaw=-80))
+        # Spawn Actor in the way
+        actor_list = []
+        blueprint_library = world.world.get_blueprint_library()
+        car_bp = random.choice(blueprint_library.filter('vehicle'))
+        car_transform = carla.Transform(carla.Location(x = -196.5, y = 233.5, z = 1),carla.Rotation(yaw=-80))
 
-        # other_car = world.world.spawn_actor(car_bp,car_transform)
+        other_car = world.world.spawn_actor(car_bp,car_transform)
 
 
         mode = 0 # mode = 0 significa que cambia de linea y 1 parar
@@ -762,15 +762,17 @@ def main():
                 # print(player_location)
                 player_x = player_location.x
                 player_y = player_location.y
+                heading = player_transform.rotation.yaw
+                print("Heading = ", heading)
 
 
-
+                
                 if mode == 0:
                 
                     if -195 < player_x < -180 and 248 > player_y > 206:  #Ruta Norte
                     
                         print("Avoiding Obstacle")
-                        control = agent.run_avoid_step()
+                        control = agent.run_avoid_step(heading)
                     else:  
                     
                         print("Following the line")

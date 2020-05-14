@@ -46,10 +46,6 @@ from behavior_agent import BehaviorAgent
 
 from local_planner_behavior import LocalPlanner as LocalP
 
-from Plot_trayecto import Plot_trayecto 
-
-plotter = Plot_trayecto()
-
 import random
 
 try:
@@ -245,8 +241,7 @@ class World(object):
                 sys.exit(1)
             # spawn_point = carla.Transform(carla.Location(x=293.900, y=-232.411, z=-37), carla.Rotation(yaw=180)) #Parqueadero Coliseo
             # spawn_point = carla.Transform(carla.Location(x=-177.0, y=160.7, z=1), carla.Rotation(yaw=100)) #Carretera principal sentido Puerta 2
-            # spawn_point = carla.Transform(carla.Location(x=-158.2, y=69.6, z=1), carla.Rotation(yaw=250))
-            spawn_point = carla.Transform(carla.Location(x=-172.641, y=161.934, z=1), carla.Rotation(yaw=-60))
+            spawn_point = carla.Transform(carla.Location(x=59.9, y=-311.2, z=-37), carla.Rotation(yaw=16)) 
             self.player = self.world.try_spawn_actor(blueprint, spawn_point)
         # Set up the sensors.
         #RGB
@@ -716,8 +711,7 @@ def main():
         agent = BehaviorAgent(world.player, behavior=args.behavior)
 
         # WAYPOINT_FILE='Waypoints_Uninorte_2.txt'
-        WAYPOINT_FILE='New_Waypoints_Uninorte.txt'
-        # WAYPOINT_FILE='Waypoints_Uninorte_Full_Lap.txt'
+        WAYPOINT_FILE='Horizontal_Waypoints_Uninorte.txt'
 
         waypoints = agent.set_waypoints(WAYPOINT_FILE, clean=True)
 
@@ -732,26 +726,7 @@ def main():
 
         mode = 0 # mode = 0 significa que cambia de linea y 1 parar
 
-        vehicles_x_pos = []
-        vehicles_y_pos = []
-
-        vehicles = world.world.get_actors().filter('vehicle.*')
         
-
-        # if len(vehicles) > 1:
-        #     for vehicle in vehicles:
-        #         other_car_ids.append(vehicle)
-            
-        #     for ID in other_car_ids:
-        #         current_actor = world.world.get_actor(ID)
-        #         other_car_actors.append(current_actor)
-
-        #     print("Actors in map:")
-        #     print(other_car_actors)
-
-
-
-        plotter.start_plot()
 
 
 
@@ -785,18 +760,6 @@ def main():
                 world.render(display)
                 pygame.display.flip()
                 # ======================================================================
-                vehicles_x_pos = []
-                vehicles_y_pos = []
-                if len(vehicles) > 1:
-                    for x in vehicles:
-                        if x.id != world.player.id:
-                            current_location = x.get_location()
-                            current_x = current_location.x
-                            current_y = current_location.y
-                            vehicles_x_pos.append(current_x)
-                            vehicles_y_pos.append(current_y)
-
-
                 player_transform = world.player.get_transform()
                 player_location = player_transform.location
                 # print("Current Location: ")
@@ -806,18 +769,20 @@ def main():
                 heading = player_transform.rotation.yaw
                 print("Heading = ", heading)
 
-                plotter.update_plot(player_x, player_y,vehicles_x_pos,vehicles_y_pos)
 
                 if mode == 0:
                 
                     # if -195 < player_x < -180 and 248 > player_y > 206:  Ruta Norte
-                    if (-98.7 > player_x >-145 and -57.9 < player_y < 16) or (player_x > 85 and player_y > -310): #Ruta Sur
+                    # if player_x >-145 and player_y < 16: #Ruta Sur
+                    if player_x > 85 and player_y > -310: #Parqueadero    
                         print("Avoiding Obstacle")
                         control = agent.run_avoid_step(heading)
+
                     else:  
                     
                         print("Following the line")
-                        control = agent.run_step()     
+                        control = agent.run_step()  
+
 
                 elif mode == 1:
                     if player_x < -193 and  player_y > 220:

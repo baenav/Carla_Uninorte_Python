@@ -237,7 +237,8 @@ class World(object):
                 print('There are no spawn points available in your map/town.')
                 print('Please add some Vehicle Spawn Point to your UE4 scene.')
                 sys.exit(1)
-            spawn_point = carla.Transform(carla.Location(x=293.900, y=-232.411, z=-37), carla.Rotation(yaw=180)) 
+            # spawn_point = carla.Transform(carla.Location(x=293.900, y=-232.411, z=-37), carla.Rotation(yaw=180)) 
+            spawn_point = carla.Transform(carla.Location(x=-172.641, y=161.934, z=1), carla.Rotation(yaw=0)) 
             self.player = self.world.try_spawn_actor(blueprint, spawn_point)
         # Set up the sensors.
         #RGB
@@ -706,7 +707,7 @@ def main():
         # Behavior Agent
         agent = BehaviorAgent(world.player, behavior=args.behavior)
 
-        WAYPOINT_FILE='Waypoints_Uninorte_2.txt'
+        WAYPOINT_FILE='Waypoints_Uninorte_Full_Lap.txt'
 
         agent.set_waypoints(WAYPOINT_FILE, clean=True)
 

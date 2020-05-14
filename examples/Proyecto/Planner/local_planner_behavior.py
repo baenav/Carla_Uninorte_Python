@@ -63,6 +63,7 @@ class LocalPlanner(object):
         self.prev_target_waypoint = None
         self.avoid_counter = 0
         self.prev_state = 0
+        
 
         self._init_controller()  # initializing controller
 
@@ -252,7 +253,7 @@ class LocalPlanner(object):
     def reset_counter(self):
         self.avoid_counter = 0
 
-    def run_avoid_step(self, target_speed=None, debug=False):
+    def run_avoid_step(self,heading, target_speed=None, debug=False):
             """
             Execute one step of local planning which involves
             running the longitudinal and lateral PID controllers to
@@ -262,6 +263,7 @@ class LocalPlanner(object):
                 :param debug: boolean flag to activate waypoints debugging
                 :return: control
             """
+            print(heading)
 
             if target_speed is not None:
                 
@@ -315,8 +317,19 @@ class LocalPlanner(object):
                 target_x = self.target_waypoint[0]
                 target_y = self.target_waypoint[1]
 
-                self.target_waypoint[0] = target_x - 3.5
-                self.target_waypoint[1] = target_y - 1.11
+                        #    30 < heading < 174
+                if (130-90) < heading < (260-90):  #Se le restan 96° por alguna razón
+                    self.target_waypoint[0] = target_x + 3.5
+                    self.target_waypoint[1] = target_y + 1.11
+                    print("Sur-Norte")
+                elif -150 < heading < -12:
+                    self.target_waypoint[0] = target_x - 3.5
+                    self.target_waypoint[1] = target_y - 1.11
+                    print("Norte-Sur")
+                elif (-60 < heading < 25) or (10 < heading < 70):
+                    self.target_waypoint[0] = target_x + 1.11
+                    self.target_waypoint[1] = target_y - 3
+                    print("Oeste-este")
                 
 
                 ## Método sumando de a poquito:
@@ -375,7 +388,6 @@ class LocalPlanner(object):
             self.prev_state = 1
 
             return control
-
 
     def run_stop_step(self, target_speed=None, debug=False):
         """

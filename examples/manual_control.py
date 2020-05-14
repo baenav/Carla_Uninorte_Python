@@ -511,10 +511,15 @@ class HUD(object):
         v = world.player.get_velocity()
         c = world.player.get_control()
         compass = world.imu_sensor.compass
-        heading = 'N' if compass > 270.5 or compass < 89.5 else ''
-        heading += 'S' if 90.5 < compass < 269.5 else ''
-        heading += 'E' if 0.5 < compass < 179.5 else ''
-        heading += 'W' if 180.5 < compass < 359.5 else ''
+        transform = world.player.get_transform()
+        # heading = 'N' if compass > 270.5 or compass < 89.5 else ''
+        # heading += 'S' if 90.5 < compass < 269.5 else ''
+        # heading += 'E' if 0.5 < compass < 179.5 else ''
+        # heading += 'W' if 180.5 < compass < 359.5 else ''
+        heading = 'N' if abs(transform.rotation.yaw) < 89.5 else ''
+        heading += 'S' if abs(transform.rotation.yaw) > 90.5 else ''
+        heading += 'E' if 179.5 > transform.rotation.yaw > 0.5 else ''
+        heading += 'W' if -0.5 > transform.rotation.yaw > -179.5 else ''
         colhist = world.collision_sensor.get_collision_history()
         collision = [colhist[x + self.frame - 200] for x in range(0, 200)]
         max_col = max(1.0, max(collision))
@@ -529,7 +534,8 @@ class HUD(object):
             'Simulation time: % 12s' % datetime.timedelta(seconds=int(self.simulation_time)),
             '',
             'Speed:   % 15.0f km/h' % (3.6 * math.sqrt(v.x**2 + v.y**2 + v.z**2)),
-            u'Compass:% 17.0f\N{DEGREE SIGN} % 2s' % (compass, heading),
+            # u'Compass:% 17.0f\N{DEGREE SIGN} % 2s' % (compass, heading),
+            u'Heading:% 16.0f\N{DEGREE SIGN} % 2s' % (transform.rotation.yaw, heading),
             'Accelero: (%5.1f,%5.1f,%5.1f)' % (world.imu_sensor.accelerometer),
             'Gyroscop: (%5.1f,%5.1f,%5.1f)' % (world.imu_sensor.gyroscope),
             'Location:% 20s' % ('(% 5.1f, % 5.1f)' % (t.location.x, t.location.y)),
